@@ -9,3 +9,15 @@
         -
             name: 'Execute a script'
             script: /root/dev_ops/test-ans-project/test_script.sh 
+
+        -
+            name: 'Start httpd service'
+            service: 
+                name: httpd
+                state: started
+
+        -
+            name: 'Add additional information to sample.txt'
+            lineinfile:
+                path: /root/dev_ops/from_controller/sample.txt
+                line: "Line added using lineinfile module"
