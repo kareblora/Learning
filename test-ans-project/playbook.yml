@@ -1,0 +1,11 @@
+-
+    name: Play 1
+    hosts: target1
+    tasks:
+        -
+            name: 'Execute a command'
+            command: mkdir from_controller creates=from_controller chdir=/root/dev_ops
+
+        -
+            name: 'Execute a script'
+            script: /root/dev_ops/test-ans-project/test_script.sh 

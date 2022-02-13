@@ -1,1 +1,1 @@
-target1 ansible_host=ansible_target ansible_ssh_pass=osboxes.org
+target1 ansible_host=ansible_target ansible_connection=ssh ansible_user=root ansible_ssh_pass=osboxes.org
