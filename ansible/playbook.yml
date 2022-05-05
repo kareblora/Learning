@@ -21,3 +21,10 @@
             lineinfile:
                 path: /root/dev_ops/from_controller/sample.txt
                 line: "Line added using lineinfile module"
+
+        -
+            name: Make changes in Apache config
+            replace:
+                path: /etc/httpd/conf/httpd.conf
+                regexp: "^Listen 80"
+                replace: "Listen 443"
