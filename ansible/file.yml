@@ -1,0 +1,56 @@
+
+    name: Play 1
+    hosts: web1
+    tasks:
+        -
+            name: 'Create blank file'
+            file:
+               path: /opt/data/perm.txt
+               state: touch
+               mode: '0640'
+
+        -
+            name: 'Add line using lineinfile module'
+            lineinfile:
+               path: /var/www/html/index.html
+               create: yes
+               line: "This line was added using Ansible lineinfile module!"
+               state: present
+
+        -
+            name: 'Find files created less than 2 minutes and greater than 1 Megabyte'
+            find:
+               paths: /opt/data
+               recurse: yes
+               age: -2m
+               size: 1m
+            register: file
+
+        -
+            name: Copy files
+            command: "cp {{ item.path }} /opt"
+            with_items: "{{ file.files }}"
+
+       -
+            name: 'Using blockinfile module'
+            blockinfile:
+               path: /var/www/html/index.html
+               block: |
+                Welcome to KodeKloud!
+                This is Ansible Lab.
+               insertbefore: BOF
+               owner: apache
+               group: apache
+
+        -
+            name: 'Using replace module to change ports'
+            replace:
+               path: /etc/httpd/conf/httpd.conf
+               regexp: 'Listen 80'
+               replace: 'Listen 8080'
+
+        -
+            name: 'Restart httpd service after replacing port'
+            service:
+               name: httpd
+               state: restarted

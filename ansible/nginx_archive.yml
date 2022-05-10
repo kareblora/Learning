@@ -1,0 +1,38 @@
+---
+- hosts: web2
+  tasks:
+    - name: Install pkgs
+      yum:
+        name: nginx
+        state: installed
+
+    - name: Start/Enable services
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Extract files
+      unarchive:
+        src: /root/nginx.zip
+        dest: /usr/share/nginx/html
+        remlte_src: yes
+
+    - name: Replace line
+      replace:
+        path: /usr/share/nginx/html/index.html
+        regexp: "This is a sample html code"
+        replace: "This is KodeKloud Ansible lab"
+
+    - name: restart Apache
+      service:
+        name: httpd
+        state: restarted
+
+    - name: Add firewall rule for Apache
+      firewalld:
+        port: 8082/tcp
+        zone: public
+        permanent: yes
+        state: enabled
+        immediate: true

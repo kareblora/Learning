@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Extract a zip archive
+      unarchive:
+        src: /usr/src/itadmin/nautilus.zip
+        dest: /opt/itadmin/
+        mode: '0777'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        remote_src: yes
+
+    - name: Remove file after extracting
+      file:
+        path: /root/data.tar.gz
+        state: absent
