@@ -1,0 +1,59 @@
+-
+    name: Play 1
+    hosts: stapp01
+    become: yes
+    tasks:
+        -
+            name: 'Create file'
+            file:
+               path: /opt/data/blog.txt
+               state: touch
+
+        -
+            name: 'Grant permission'
+            acl:
+               path: /opt/data/blog.txt
+               entity: "{{ ansible_user }}"
+               etype: group
+               permissions: r
+               state: present
+
+-
+    name: Play 2
+    hosts: stapp02
+    become: yes
+    tasks:
+        -
+            name: 'Create file'
+            file:
+               path: /opt/data/story.txt
+               state: touch
+
+        -
+            name: 'Grant permission'
+            acl:
+               path: /opt/data/story.txt
+               entity: "{{ ansible_user }}"
+               etype: user
+               permissions: rw
+               state: present
+
+-
+    name: Play 3
+    hosts: stapp03
+    become: yes
+    tasks:
+        -
+            name: 'Create file'
+            file:
+               path: /opt/data/media.txt
+               state: touch
+
+        -
+            name: 'Grant permission'
+            acl:
+               path: /opt/data/media.txt
+               entity: "{{ ansible_user }}"
+               etype: group
+               permissions: rw
+               state: present
