@@ -1,0 +1,25 @@
+  - name: Play 1
+    hosts: all
+    gather_facts: yes
+    become: yes
+    tasks:
+
+        - name: 'Using blockinfile module to add line'
+          blockinfile:
+            path: /root/facts.txt
+            create: yes
+            block: |
+             Ansible managed node IP is {{ ansible_default_ipv4.address }}.
+
+        - name: 'Install httpd package'
+          yum:
+            name: httpd
+            state: installed
+ 
+        - name: Copy files
+          command: "cp /root/facts.txt /var/www/html/index.html"
+
+        - name: 'Start httpd service'
+          service:
+            name: httpd
+            state: restarted
