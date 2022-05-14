@@ -1,0 +1,9 @@
+- name: Copy files
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - copy:
+     src: /usr/src/sysops/index.html
+     dest: /opt/sysops/index.html
+     
