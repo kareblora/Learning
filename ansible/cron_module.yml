@@ -1,0 +1,40 @@
+---
+- hosts: node00
+  become: yes
+  tasks:
+
+    - name: Creates a cron file under /etc/cron.d
+      cron:
+        name: yum update
+        weekday: "0"
+        minute: "5"
+        hour: "8"
+        user: root
+        job: "yum -y update"
+        cron_file: ansible_yum
+
+    - name: Cleanup after every after reboot
+      cron:
+        name: "cleanup"
+        special_time: reboot
+        job: "rm -rf /tmp/*"
+
+    - name: Ensure old job is no longer present
+      cron:
+        name: "Check Memory" 
+        state: absent
+
+    - name: Free Memory Check
+      cron:
+        name: "Free Memory Check"
+        minute: "0"
+        hour: "*/2"
+        job: "sh /root/free.sh"
+
+    - name: Clear Lastlog
+      cron:
+        name: "Clear Lastlog"
+        minute: "0"
+        hour: "0"
+        job: 'echo ""  > /var/log/lastlog'
+
