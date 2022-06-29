@@ -1,0 +1,121 @@
+#Install common dependencies
+
+- name: Deploy lamp stack application (Common dependencies)
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install common dependencies
+      yum:
+        name:
+          - libselinux-python
+          - libsemanage-python
+          - firewalld
+        state: installed
+
+# Install and configure database
+
+- name: Install and configure database server
+  hosts: lamp-db
+  become: yes
+  tasks:
+    - name: Install Packages
+      yum:
+        name:
+          - mariadb-server
+          - MySQL-python
+        state: installed
+
+    - name: Copy files
+      copy:
+        src: files/my.cnf
+        dest: /etc/my.cnf
+      
+    - name: Start/Enable services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items:
+        - mariadb
+        - firewalld
+
+    - name: Add firewall rule for Mariadb
+      firewalld:
+        port: "{{ mysql_port }}/tcp"
+        zone: public
+        permanent: yes
+        state: enabled
+        immediate: true
+
+    - name: Create new mariadb database 
+      mysql_db:
+        name: "{{ dbname }}"
+        state: present
+
+    - name: Create mariadb user with all database privileges
+      mysql_user:
+        name: "{{ dbuser }}"
+        password: "{{ dbpassword }}"
+        host: "172.20.1.100"
+        priv: '*.*:ALL'
+        state: present
+
+    - name: Copy database dump file
+      copy:
+        src: files/db-load-script.sql
+        dest: /tmp/db-load-script.sql
+
+    - name: Load database script
+      shell: mysql -f < /tmp/db-load-script.sql
+
+# Install and configure webserver
+
+- name: Install and configure web server
+  hosts: lamp-web
+  become: yes
+  tasks:
+    - name: Install Packages
+      yum:
+        name:
+          - httpd
+          - php
+          - php-mysql
+          - git
+        state: installed
+
+    - name: Start/Enable firewalld services
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Add firewall rule for httpd
+      firewalld:
+        port: "{{ httpd_port }}/tcp"
+        zone: public
+        permanent: yes
+        state: enabled
+        immediate: true
+
+    - name: Set index.php as default page
+      replace:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: "DirectoryIndex index.html"
+        replace: "DirectoryIndex index.php"
+
+    - name: Restart httpd services
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
+
+    - name: Clone source code fdro repository
+      git: 
+        repo: "{{ repository }}"
+        dest:  /var/www/html/
+        force: yes
+
+    - name: Copy custom index.php file
+      copy:
+        src: files/index.php
+        dest: /var/www/html/index.php
