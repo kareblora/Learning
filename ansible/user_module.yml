@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Remove user 
+      user:
+        name: admin
+        state: absent
+        remove: yes
+
+    - name: Remove group
+      group:
+        name: admin
+        state: absent
+
+    - name: Added a consultant whose account you want to expire
+      user:
+        name: neymarsabin
+        expires: 1704067199
+
+    - name: Check group if present
+      group:
+        name: admin
+        state: present
+
+    - name: Create user
+      user:
+        name: admin
+        comment: admin
+        uid: 2048
+        group: admin
