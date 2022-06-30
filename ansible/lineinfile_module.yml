@@ -1,0 +1,31 @@
+
+
+- name: Ansible lineinfile module
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install httpd server
+      yum:
+        name: httpd
+        state: installed
+
+    - name: Start/Enable httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Copy using inline content
+      copy:
+        content: 'This is a Nautilus sample file, created using Ansible!'
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    - name: Add new line at beginning of file
+      lineinfile:
+        path: /var/www/html/index.html
+        insertbefore: BOF
+        line: 'Welcome to xFusionCorp Industries!'
+        state: present
