@@ -25,9 +25,9 @@
           - MySQL-python
         state: installed
 
-    - name: Copy files
-      copy:
-        src: files/my.cnf
+    - name: Copy templates
+      template:
+        src: templates/my.cnf.j2
         dest: /etc/my.cnf
       
     - name: Start/Enable services
@@ -56,13 +56,13 @@
       mysql_user:
         name: "{{ dbuser }}"
         password: "{{ dbpassword }}"
-        host: "172.20.1.100"
+        host: "{{ hostvars.lamp-web.ansible_host"
         priv: '*.*:ALL'
         state: present
 
     - name: Copy database dump file
-      copy:
-        src: files/db-load-script.sql
+      template:
+        src: templates/db-load-script.sql.j2
         dest: /tmp/db-load-script.sql
 
     - name: Load database script
@@ -116,6 +116,6 @@
         force: yes
 
     - name: Copy custom index.php file
-      copy:
-        src: files/index.php
+      template:
+        src: templates/index.php.j2
         dest: /var/www/html/index.php
