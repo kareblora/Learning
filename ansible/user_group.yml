@@ -1,0 +1,38 @@
+---
+- name: Ansible Create Users and Groups
+  hosts: stapp03
+  become: yes
+  gather_facts: yes
+  tasks:
+
+    - name: Check group if present
+      group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - admins
+        - developers
+
+    - name: Create admins users 
+      user:
+        name: "{{ item }}"
+        password: "{{ 'BruCStnMT5' | password_hash('sha512') }}"
+        groups: admins, wheel
+        state: present
+      loop:
+        - rob
+        - david
+        - joy
+
+    - name: Create developers users
+      user:
+        name: "{{ item }}"
+        password: "{{ 'LQfKeWWxWD' | password_hash('sha512') }}"
+        home: "/var/www/{{ item }}"
+        group: developers
+        state: present
+      loop:
+        - tim
+        - ray
+        - jim
+        - mark
