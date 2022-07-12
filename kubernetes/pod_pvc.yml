@@ -1,0 +1,72 @@
+#Persistent Volume definition
+---
+ apiVersion: v1 
+ kind: PersistentVolume 
+ metadata:
+   name: pv-xfusion
+   labels:
+     type: pod-local
+ spec:
+   storageClassName: manual       
+   capacity:
+     storage: 4Gi
+   accessModes: 
+      -  ReadWriteOnce 
+   hostPath:                       
+     path: "/mnt/data"
+
+#Persistent Volume Claim definition
+---
+ apiVersion: v1 
+ kind: PersistentVolumeClaim       
+ metadata:                          
+   name: pvc-xfusion
+   labels:
+     type: pod-local 
+ spec:                               
+   storageClassName: manual       
+   accessModes: 
+   - ReadWriteOnce             
+   resources:
+     requests:
+       storage: 1Gi 
+
+
+#Pod definition
+---
+ apiVersion: v1
+ kind: Pod
+ metadata:
+   name: pod-xfusion
+   labels: 
+     app: pod-local
+ spec:
+   containers:
+     - name: container-xfusion
+       image: nginx:latest 
+       ports: 
+         - containerPort: 80
+       volumeMounts:
+         - name: pod-storage
+           mountPath: /usr/share/nginx/html
+   volumes:
+     - name: pod-storage
+       persistentVolumeClaim:
+         claimName: pvc-xfusion
+
+#Service definition
+---
+ apiVersion: v1                    
+ kind: Service                      
+ metadata:
+   name: web-xfusion    
+   labels:             
+     app: pod-local  
+ spec:
+   type: NodePort
+   ports:
+     - targetPort: 80
+       port: 80
+       nodePort: 30008
+   selector:                       
+     app: pod-local
