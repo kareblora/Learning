@@ -1,0 +1,26 @@
+- name: Ansible blockinfile module
+  hosts: stapp01, stapp02, stapp03
+  become: yes
+  tasks:
+    - name: Install httpd server
+      yum:
+        name: httpd
+        state: installed
+
+    - name: Start/Enable httpd service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: 'Using blockinfile module'
+      blockinfile:
+        path: /var/www/html/index.html
+        create: yes
+        block: |
+         Welcome to XfusionCorp!
+         This is Nautilus sample file, created using Ansible!
+         Please do not modify this file manually!
+        owner: apache
+        group: apache
+        mode: "0777"
