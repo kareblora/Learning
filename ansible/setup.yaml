@@ -1,0 +1,42 @@
+
+- name: Install and configure httpd and php 
+  hosts: stapp03
+  become: yes
+  tasks:
+    - name: Install packages
+      yum:
+        name:
+          - httpd
+          - php
+        state: latest
+
+    - name: Create a directory if it does not exist
+      file:
+        path: /var/www/html/myroot
+        state: directory
+        owner: apache
+        group: apache
+
+    - name: Replace Document Root
+      replace:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: "/var/www/html"
+        replace: "/var/www/html/myroot"
+
+    - name: Copy templates
+      template:
+        src: templates/phpinfo.php.j2
+        dest: /var/www/html/myroot/phpinfo.php
+        owner: apache
+        group: apache
+
+    - name: Start/Enable services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items:
+        - httpd
+
+
+
