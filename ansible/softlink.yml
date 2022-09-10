@@ -1,0 +1,37 @@
+---
+- name: Create files and softlinks using conditional
+  become: yes
+  gather_facts: yes
+  hosts: all
+  tasks:
+    - name: Create blog.txt to stapp01
+      file:
+        path: /opt/dba/blog.txt
+        owner: tony
+        group: tony
+        state: touch 
+      when: ansible_hostname == "stapp01"
+    
+    - name: Create story.txt to stapp02
+      file:
+        path: /opt/dba/story.txt
+        owner: steve
+        group: steve
+        state: touch
+      when: ansible_hostname == "stapp02"
+    
+    - name: Create media.txt to stapp03
+      file:
+        path: /opt/dba/media.txt
+        owner: banner
+        group: banner
+        state: touch
+      when: ansible_hostname == "stapp03"
+
+    - name: Create softlink  
+      file:
+        src: /opt/dba
+        dest: /var/www/html
+        state: link
+
+
