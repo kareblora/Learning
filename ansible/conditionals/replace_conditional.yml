@@ -1,0 +1,27 @@
+---
+- name: Replace module using conditional
+  become: yes
+  gather_facts: yes
+  hosts: all
+  tasks:
+    - name: Replace data in stapp01
+      replace:
+        path: /opt/itadmin/blog.txt      
+        regexp: "xFusionCorp"
+        replace: "Nautilus"
+      when: ansible_hostname == "stapp01"
+      
+    - name: Replace data in stapp02
+      replace:
+        path: /opt/itadmin/story.txt
+        regexp: "Nautilus"
+        replace: "KodeKloud"      
+      when: ansible_hostname == "stapp02"
+
+    - name: Replace data in stapp03
+      replace:
+        path: /opt/itadmin/media.txt
+        regexp: "KodeKloud"
+        replace: "xFusionCorp Industries"
+      when: ansible_hostname == "stapp03" 
+

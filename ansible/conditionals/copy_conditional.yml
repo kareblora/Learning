@@ -1,0 +1,32 @@
+---
+- name: Copy file using conditional
+  become: yes
+  gather_facts: yes
+  hosts: all
+  tasks:
+    - name: Copy blog.txt to stapp01
+      copy:
+        src: /usr/src/security/blog.txt
+        dest: /opt/security/
+        mode: "0655"
+        owner: tony
+        group: tony
+      when: ansible_hostname == "stapp01"
+
+    - name: Copy story.txt to stapp02
+      copy:
+        src: /usr/src/security/story.txt
+        dest: /opt/security/
+        mode: "0655"
+        owner: steve
+        group: steve
+      when: ansible_hostname == "stapp02" 
+
+    - name: Copy media.txt to stapp03
+      copy:
+        src: /usr/src/security/media.txt
+        dest: /opt/security/
+        mode: "0655"
+        owner: banner
+        group: banner
+      when: ansible_hostname == "stapp03"  
